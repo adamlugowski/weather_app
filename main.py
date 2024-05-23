@@ -1,10 +1,7 @@
-from requests import get
+from database import db_init, insert_data_to_db
+from data import get_pollution, get_weather
 
-url = 'https://danepubliczne.imgw.pl/api/data/synop/'
-response = get(url)
 
-user = input('Napisz w którym Polskim mieście chcesz sprawdzić pogodę: ')
-data = response.json()
-for foo in data:
-    if foo['stacja'] == user:
-        print('Temperatura w', user, 'to', foo['temperatura'])
+if __name__ == '__main__':
+    db_init()
+    insert_data_to_db(get_weather(), get_pollution())
