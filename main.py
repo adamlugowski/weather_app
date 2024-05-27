@@ -1,7 +1,13 @@
-from database import db_init, insert_data_to_db
-from data import get_pollution, get_weather
+from database import Database
+from data import Station
+
+
+def main():
+    database = Database()
+    database.db_init()
+    station = Station('Wroclaw', 'pl')
+    station.save_to_db(database)
 
 
 if __name__ == '__main__':
-    db_init()
-    insert_data_to_db(get_weather(), get_pollution())
+    main()
