@@ -7,8 +7,14 @@ api_key = os.getenv('API_KEY')
 
 
 def get_weather():
-    weather_url = f'https://api.openweathermap.org/data/2.5/weather?q=Wroclaw,pl&APPID={api_key}'
-    response = requests.get(weather_url)
+    weather_url = f'https://api.openweathermap.org/data/2.5/weather?q=Wroclaw,pl&APPID={api_key}'    
+    try:
+        response = requests.get(weather_url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
+    
     result = response.json()
     weather_data = {}
     for key, value in result['main'].items():
@@ -23,12 +29,23 @@ def get_weather():
 
 def get_pollution():
     geo_url = f'https://api.openweathermap.org/geo/1.0/direct?q=Wroclaw,pl&limit=1&appid={api_key}'
-    geo_response = requests.get(geo_url)
+    try:
+        geo_response = requests.get(geo_url)
+        geo_response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error during geo request: {e}")
+        return None
     geo_result = geo_response.json()
     lat = geo_result[0]['lat']
     lon = geo_result[0]['lon']
     air_pollution_url = f'https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={api_key}'
-    air_pollution_response = requests.get(air_pollution_url)
+    try:
+        air_pollution_response = requests.get(air_pollution_url)
+        air_pollution_response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error during air pollution request: {e}")
+        return None
+
     air_pollution_result = air_pollution_response.json()
     pollution_level = None
     for main in air_pollution_result['list']:
