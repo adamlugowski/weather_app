@@ -7,6 +7,7 @@ def main():
     database.db_init()
     station = Station('Wroclaw', 'pl')
     station.save_to_db(database)
+    database.display_data()
 
 
 if __name__ == '__main__':

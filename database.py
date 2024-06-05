@@ -21,6 +21,9 @@ class Database:
         self.connection = None
 
     def connect(self):
+        """
+        This method is for establishing the connection using the environment variables.
+        """
         try:
             self.connection = psycopg2.connect(
                     dbname=self.db_name,
@@ -32,6 +35,9 @@ class Database:
             print(f"A database error occurred: {e}")
 
     def close(self):
+        """
+        This method is for closing the connection
+        """
         if self.connection:
             self.connection.close()
             self.connection = None
@@ -53,7 +59,6 @@ class Database:
             self.connection.commit()
         except psycopg2.DatabaseError as e:
             print(f"A database error occurred: {e}")
-            raise
         finally:
             self.close()
 
@@ -77,6 +82,21 @@ class Database:
             self.connection.commit()
         except psycopg2.Error as error:
             print(f"Error: {error}")
-            raise
+        finally:
+            self.close()
+
+    def display_data(self):
+        """
+        Displaying current weather for requested city.
+        """
+        self.connect()
+        try:
+            with self.connection.cursor() as cursor:
+                cursor.execute('SELECT * FROM weather_data ORDER BY created_at DESC LIMIT 1')
+                result = cursor.fetchone()
+                if result:
+                    print(f'Temperature in {result[1]} is {result[2]} Celcius. Air quality is {result[4]}.')
+        except psycopg2.Error as error:
+            print(f"Error: {error}")
         finally:
             self.close()
