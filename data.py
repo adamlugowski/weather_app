@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 api_key = os.getenv('API_KEY')
@@ -11,6 +12,26 @@ class Station:
         self.city = city
         self.country = country
         self.api_key = api_key
+
+    def is_valid_city_name(self, city_name):
+        """
+        This method checks if the user input is a non-empty string
+        containing valid characters and is not longer than 50 letters.
+
+        Args:
+            city_name:
+        """
+        if not city_name:
+            print('City name cannot be empty. ')
+            return False
+        if not re.match("^[A-Za-zĄĆĘŁŃÓŚŻŹąćęłńóśżź ]+$", city_name):
+            print('City name can only contain letters and spaces. ')
+            return False
+        if len(city_name) > 50:
+            print('City name is too long. ')
+            return False
+        else:
+            return True
 
     def get_weather(self):
         """
@@ -48,6 +69,9 @@ class Station:
             geo_response = requests.get(geo_url)
             geo_response.raise_for_status()
             geo_result = geo_response.json()
+            if not geo_result:
+                print(f"Error: No geographical data found for the city '{self.city}'.")
+                return None
             lat = geo_result[0]['lat']
             lon = geo_result[0]['lon']
             air_pollution_url = f'https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={self.api_key}'
@@ -57,6 +81,8 @@ class Station:
         except requests.exceptions.RequestException as e:
             print(f"Error during API request: {e}")
             return None
+        except IndexError:
+            print(f'No geographical data found for the city {self.city}')
 
         pollution_level = None
         for main in air_pollution_result['list']:
@@ -83,16 +109,20 @@ class Station:
 
     def save_to_db(self, db):
         """
-        This method retrieves weather and pollution data for a specific city and country, and then saves this data to a database
+        This method checks if weather and pollution data is accessible for requested city.
+        Afterward it retrieves weather and pollution data for a specific city and country
+        and then saves this data to a database.
 
         Args:
             db: instance of Database class
         """
         weather_data = self.get_weather()
         pollution_level = self.get_pollution()
+        if weather_data is None or pollution_level is None:
+            print(f"Error: Failed to retrieve data for {self.city}. Data not saved.")
+            return
         try:
-            if weather_data and pollution_level and 'main' in weather_data:
+            if weather_data and pollution_level:
                 db.insert_data_to_db(self.city, weather_data, pollution_level)
         except Exception as e:
             print(f"Error while inserting data to the database: {e}")
-
