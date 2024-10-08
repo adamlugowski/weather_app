@@ -30,7 +30,6 @@ The Weather Station Project is designed to collect and display real-time weather
 - **Database**: PostgreSQL
 - **Libraries**:
   - `requests`
-  - `pandas`
   - `psycopg2`
   - `python-dotenv`
 
@@ -84,7 +83,7 @@ The PostgreSQL database schema for storing weather and air quality data includes
 
 - **weather_data**:
   - `id` (Primary Key)
-  - 'city' (Text)
+  - `city` (Text)
   - `temperature` (Float)
   - `humidity` (Float)
   - `pollution_level` (Text)

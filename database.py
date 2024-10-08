@@ -84,19 +84,3 @@ class Database:
             print(f"Error: {error}")
         finally:
             self.close()
-
-    def display_data(self):
-        """
-        Displaying current weather for requested city.
-        """
-        self.connect()
-        try:
-            with self.connection.cursor() as cursor:
-                cursor.execute('SELECT * FROM weather_data ORDER BY created_at DESC LIMIT 1')
-                result = cursor.fetchone()
-                if result:
-                    print(f'Temperature in {result[1]} is {result[2]} Celcius. Air quality is {result[4]}.')
-        except psycopg2.Error as error:
-            print(f"Error: {error}")
-        finally:
-            self.close()

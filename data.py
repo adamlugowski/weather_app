@@ -19,7 +19,7 @@ class Station:
         containing valid characters and is not longer than 50 letters.
 
         Args:
-            city_name:
+            city_name: name of city from user input
         """
         if not city_name:
             print('City name cannot be empty. ')
@@ -41,21 +41,31 @@ class Station:
         weather_url = f'https://api.openweathermap.org/data/2.5/weather?q={self.city},{self.country}&APPID={self.api_key}'
         try:
             response = requests.get(weather_url)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            print(f"Error: {e}")
+            result = response.json()
+            if result.get('cod') == '404':
+                print(f"Error: City '{self.city}' not found.")
+                return None
+            if not result:
+                print(f"Error: No geographical data found for the city '{self.city}'")
+                return None
+
+            weather_data = {}
+            for key, value in result['main'].items():
+                if key == 'temp':
+                    new_value = value - 273.15
+                    weather_data[key] = round(new_value, 2)
+                elif key == 'humidity':
+                    weather_data[key] = value
+
+            return weather_data
+
+        except requests.exceptions.RequestException as error:
+            print(f"Error: {error}")
             return None
 
-        result = response.json()
-        weather_data = {}
-        for key, value in result['main'].items():
-            if key == 'temp':
-                new_value = value - 273.15
-                weather_data[key] = round(new_value, 2)
-            elif key == 'humidity':
-                weather_data[key] = value
-
-        return weather_data
+        except requests.exceptions.HTTPError as http_error:
+            print(f'HTTP error occurred: {http_error}')
+            return None
 
     def get_pollution(self):
         """
@@ -82,7 +92,7 @@ class Station:
             print(f"Error during API request: {e}")
             return None
         except IndexError:
-            print(f'No geographical data found for the city {self.city}')
+            print(f"No geographical data found for the city '{self.city}'")
 
         pollution_level = None
         for main in air_pollution_result['list']:
@@ -126,3 +136,19 @@ class Station:
                 db.insert_data_to_db(self.city, weather_data, pollution_level)
         except Exception as e:
             print(f"Error while inserting data to the database: {e}")
+
+    def display_weather_data(self, city_name):
+        """
+        Displaying current weather for requested city.
+
+        Args:
+            city_name: name of city from user input
+        """
+        pollution_level = self.get_pollution()
+        weather_data = self.get_weather()
+        try:
+            temperature = weather_data.get('temp')
+            print(f'Temperature in {city_name} is {temperature} Celcius. Air quality is {pollution_level.lower()}. ')
+        except AttributeError as error:
+            print(f"Error: No geographical data found for the city '{self.city}'. ")
+

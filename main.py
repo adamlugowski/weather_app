@@ -9,7 +9,7 @@ def main():
     station = Station(city, 'pl')
     if station.is_valid_city_name(city):
         station.save_to_db(database)
-        database.display_data()
+        station.display_weather_data(city)
     else:
         print('Invalid city name. Please try again. ')
 
