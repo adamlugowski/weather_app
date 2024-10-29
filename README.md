@@ -45,7 +45,7 @@ The Weather Station Project is designed to collect and display real-time weather
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/weather-station.git
+    git clone https://github.com/adamlugowski/weather-station.git
     cd weather-station
     ```
 
