@@ -8,6 +8,40 @@ api_key = os.getenv('API_KEY')
 
 
 class Station:
+    """
+    A class to manage weather and pollution data retrieval for a specific city and country using the OpenWeatherMap API.
+
+    The Station class allows users to verify valid city names, retrieve current weather and pollution data,
+    and save this information to a database. It uses the OpenWeatherMap API to fetch weather and air quality data
+    and supports error handling for API requests and database operations.
+
+    Attributes:
+    ----------
+    city : str
+        The name of the city for which weather and pollution data is requested.
+    country : str
+        The country code for the specified city.
+    api_key : str
+        The API key used for accessing the OpenWeatherMap API, sourced from environment variables.
+
+    Methods:
+    -------
+    is_valid_city_name(city_name):
+        Checks if the input city name is valid, containing only letters and spaces, and not exceeding 50 characters.
+
+    get_weather():
+        Fetches the current weather data (temperature in Celsius and humidity) for the specified city and country.
+
+    get_pollution():
+        Retrieves the air pollution level for the specified city and country based on geographical coordinates.
+
+    save_to_db(db):
+        Saves the retrieved weather and pollution data for the city to a database if both data points are available.
+
+    display_weather_data(city_name):
+        Displays the current temperature and air quality level for the requested city.
+
+    """
     def __init__(self, city, country):
         self.city = city
         self.country = country

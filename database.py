@@ -12,6 +12,51 @@ db_port = os.getenv('DB_PORT')
 
 
 class Database:
+    """
+    A class to manage PostgreSQL database connection, setup, and data insertion for weather-related information.
+
+    This class uses environment variables to establish a connection to a PostgreSQL database and provides methods
+    to initialize the database with a weather_data table, as well as insert new weather data entries.
+
+    Attributes:
+    ----------
+    db_name : str
+        The name of the PostgreSQL database, obtained from environment variables.
+    db_user : str
+        The PostgreSQL database username, obtained from environment variables.
+    db_password : str
+        The password for the PostgreSQL user, obtained from environment variables.
+    db_host : str
+        The host address for the PostgreSQL database, obtained from environment variables.
+    db_port : str
+        The port number for the PostgreSQL database, obtained from environment variables.
+    connection : psycopg2.connection or None
+        The current database connection object, initially set to None.
+
+    Methods:
+    -------
+    connect():
+        Establishes a connection to the PostgreSQL database using credentials specified in environment variables.
+        Handles any database errors that may occur.
+
+    close():
+        Closes the current database connection if it exists and sets the connection attribute to None.
+
+    db_init():
+        Initializes the database by creating the weather_data table if it does not already exist. The table
+        includes fields for city, temperature, humidity, pollution level, and a timestamp indicating when
+        the data was recorded. Commits the changes if successful and handles database errors.
+
+    insert_data_to_db(city, weather_data, pollution_level):
+        Inserts weather data and pollution level information into the weather_data table for a specified city.
+
+        Args:
+            city (str): The name of the city.
+            weather_data (dict): A dictionary containing 'temp' (temperature) and 'humidity' values.
+            pollution_level (str): A description of the pollution level for the city.
+
+        Handles any database errors and closes the connection after the insertion.
+    """
     def __init__(self):
         self.db_name = os.getenv('DB_NAME')
         self.db_user = os.getenv('DB_USER')
